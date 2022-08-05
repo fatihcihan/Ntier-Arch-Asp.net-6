@@ -13,7 +13,7 @@ namespace Entities.Concrete
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public decimal UnitPrice { get; set; }
-
+        
         /*  Access Modifier       
          
         public -> Bu class'a diger katmanlar/projeler (classlar'dan) erisebilsin demektir

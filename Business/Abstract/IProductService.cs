@@ -10,5 +10,7 @@ namespace Business.Abstract
     public interface IProductService    // business -> hem entites'e hem de dal'a referans verdik
     {
         List<Product> GetAll();
+        List<Product> GetAllByCategoryId(int categoryId);
+        List<Product> GetByUnitPrice(decimal min, decimal max);
     }
 }
