@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Business.Constants
 {
+    // proje icindeki sabit mesajlari bu static class ile yonetiyoruz
     public static class Messages
     {
         public static string ProductAdded = "the product has been successfully added";
