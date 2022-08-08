@@ -1,14 +1,28 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Business.Abstract;
 using Business.Concrete;
+using Business.DependencyResolvers.Autofac;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ioc yapisi olarak autofac kullandigimizi burada belirtiyoruz (service-manager)
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())  
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        builder.RegisterModule(new AutofacBusinessModule());
+    });
+
 // Add services to the container.
 
-builder.Services.AddSingleton<IProductService, ProductManager>();       // IoC -> servise denk gelen manager'i ver geç (tek instance)
-builder.Services.AddSingleton<IProductDal, EfProductDal>();             // soyutu istiyoruz bize somutu veriyor gibi dusunulebilir
+// burayi business'a tasidik. Dependency resolvers -> autofac
+
+//builder.Services.AddSingleton<IProductService, ProductManager>();       // IoC -> servise denk gelen manager'i ver geç (tek instance)
+//builder.Services.AddSingleton<IProductDal, EfProductDal>();             // soyutu istiyoruz bize somutu veriyor gibi dusunulebilir
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
