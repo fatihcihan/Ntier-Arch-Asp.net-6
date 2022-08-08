@@ -10,6 +10,8 @@ namespace Business.Constants
     {
         public static string ProductAdded = "the product has been successfully added";
         public static string ProductNotAdded = "the product could not be added";
+        public static string MaintenanceTime = "";
+        public static string ProductListed = "";
 
     }
 }
