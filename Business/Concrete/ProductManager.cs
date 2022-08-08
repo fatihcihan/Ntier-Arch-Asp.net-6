@@ -1,9 +1,12 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +25,27 @@ namespace Business.Concrete
 
         public IResult Add(Product product)
         {                               // Error veya succes resultlarin icine string yazmamaliyiz. 
-            if (product == null)        // magic stringler isimizi gorur. business katmaninda constants icinde static classla yonetebiliriz burayi
-            {
-                return new ErrorResult(Messages.ProductNotAdded);
-            }
+                                        // magic stringler isimizi gorur. business katmaninda constants icinde static classla yonetebiliriz burayi
+
+            //if (product == null)       // buraya gerek yok fluent validation ile gerekli kontrolleri yaptik
+            //{
+            //    return new ErrorResult(Messages.ProductNotAdded);
+            //}
+
+
+            //product ile ilgili validationlari burada yapiyoruz
+
+            //var context = new ValidationContext<Product>(product);  // context -> ilgili thread
+            //ProductValidator productValidator = new ProductValidator();     // product validator ile (ilgili kurallar icin)
+            //var result = productValidator.Validate(context);
+            //productValidator.ValidateAndThrow(product);
+
+            // yukaridaki validation'ı core katmaninda cross cutting concerns altindaki validation'a tasidik
+
+            // yukaridaki tum kodlari core'a tasiyip sadece ilgili validator referansi ve objeyi vererek daha okunur hale getirdik
+            ValidationTool.Validate(new ProductValidator(), product);
+
+
             _productDal.Add(product);
             return new SuccessResult(Messages.ProductAdded);
         }
