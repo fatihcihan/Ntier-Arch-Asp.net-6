@@ -25,7 +25,7 @@ namespace Business.ValidationRules.FluentValidation
 
         public bool StartWithA(string arg)      //arg -> product name
         {
-            return arg.StartsWith("A"); // false donerse patlar 
+            return arg.StartsWith("A");     // false donerse patlar 
         }
     }
 }

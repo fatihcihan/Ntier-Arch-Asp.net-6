@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -23,6 +24,7 @@ namespace Business.Concrete
             _productDal = productDal;       // burada constructor calisinca bizden bir product dal referansi istiyor ve biz de inject ettik
         }                                   // su an in memory kullaniyoruz daha sonra entity framework kullanabiliriz sonucta
 
+        [ValidationAspect(typeof(ProductValidator))]     // validation'i buraya tasidik aspect sayesinde
         public IResult Add(Product product)
         {                               // Error veya succes resultlarin icine string yazmamaliyiz. 
                                         // magic stringler isimizi gorur. business katmaninda constants icinde static classla yonetebiliriz burayi
@@ -43,7 +45,9 @@ namespace Business.Concrete
             // yukaridaki validation'ı core katmaninda cross cutting concerns altindaki validation'a tasidik
 
             // yukaridaki tum kodlari core'a tasiyip sadece ilgili validator referansi ve objeyi vererek daha okunur hale getirdik
-            ValidationTool.Validate(new ProductValidator(), product);
+
+            //ValidationTool.Validate(new ProductValidator(), product); 
+            // core katmanina tasidigimiz yapiyi da aop sayesinde bir attribute olarak kullanarak kod karmasasindan kurtulacagiz
 
 
             _productDal.Add(product);
