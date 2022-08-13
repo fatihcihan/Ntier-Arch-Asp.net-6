@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -15,19 +16,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Business.Concrete
-{
-    public class ProductManager : IProductService   // IProductService'i implement ederek servis olarak actik ve burada gerekli is kodlarini yaziyoruz
-    {                                   // bir is sinifi baska siniflari new'lemez, injection eder, yani ne entity framework ne de in memory ismi gececek
+{    // IProductService'i implement ederek servis olarak actik ve burada gerekli is kodlarini yaziyoruz
+    public class ProductManager : IProductService
+    {   // bir is sinifi baska siniflari new'lemez, injection eder, yani ne entity framework ne de in memory ismi gececek
         IProductDal _productDal;
-        public ProductManager(IProductDal productDal)
+        public ProductManager(IProductDal productDal, ILogger logger)
         {
-            _productDal = productDal;       // burada constructor calisinca bizden bir product dal referansi istiyor ve biz de inject ettik
-        }                                   // su an in memory kullaniyoruz daha sonra entity framework kullanabiliriz sonucta
+            // burada constructor calisinca bizden bir product dal referansi istiyor ve biz de inject ettik
+            _productDal = productDal;
+        }
+        // su an in memory kullaniyoruz daha sonra entity framework kullanabiliriz sonucta
 
         [ValidationAspect(typeof(ProductValidator))]     // validation'i buraya tasidik aspect sayesinde
         public IResult Add(Product product)
-        {                               // Error veya succes resultlarin icine string yazmamaliyiz. 
-                                        // magic stringler isimizi gorur. business katmaninda constants icinde static classla yonetebiliriz burayi
+        {     // Error veya succes resultlarin icine string yazmamaliyiz. 
+              // magic stringler isimizi gorur. business katmaninda constants icinde static classla yonetebiliriz burayi
 
             //if (product == null)       // buraya gerek yok fluent validation ile gerekli kontrolleri yaptik
             //{
@@ -50,8 +53,30 @@ namespace Business.Concrete
             // core katmanina tasidigimiz yapiyi da aop sayesinde bir attribute olarak kullanarak kod karmasasindan kurtulacagiz
 
 
-            _productDal.Add(product);
-            return new SuccessResult(Messages.ProductAdded);
+
+            // bir kategoride en fazla 10 urun olabilir (business code)
+            // daha sonra 10 urun yerine 15 urun derlerse asagidaki kod patlar, cunku ayni kodu update icin de yazdik 
+            // asagidaki kodu private olarak tanimladigimiz methodun icine yaziyp onu hem add'de hem de update'de kullanacagiz
+
+
+            //var result = _productDal.GetAll(x => x.CategoryId == product.CategoryId).Count;
+            //if (result >= 10)
+            //{
+            //    return new ErrorResult("");
+            //}
+
+
+            if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            {
+                // ayni isimde urun eklenemez 
+                if (CheckIfProductNameExists(product.Name).Success)
+                {
+                    _productDal.Add(product);
+                    return new SuccessResult(Messages.ProductAdded);
+                }
+            }
+            return new ErrorResult("");
+
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -84,6 +109,36 @@ namespace Business.Concrete
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        [ValidationAspect(typeof(ProductValidator))] // add methodundaki validationu burada da rahatca kullanabiliyoruz
+        public IResult Update(Product product)
+        {
+            return new SuccessResult();
+        }
+
+        // yukarida add methodundaki is kodunu buraya tasiyoruz (hatta is kurali parcacigi diyebiliriz)
+        // bir kategoride en fazla 10 urun olabilirin is kuralini methoda tasidik
+        // private yapmamizin sebebi producta ait bir is kodu parcacigi oldugu icin bu classta kullaniriz
+        // artik bu methodu hem add hem de update methodunda cagirabiliriz.
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            var result = _productDal.GetAll(x => x.CategoryId == categoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfProductNameExists(string productName)
+        {
+            var result = _productDal.GetAll(x => x.Name == productName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.ProductNameAlreadyExists);
+            }
+            return new SuccessResult();
         }
     }
 }
