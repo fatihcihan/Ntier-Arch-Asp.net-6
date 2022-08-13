@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
+using Business.CCS;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
@@ -23,10 +24,10 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
 
 
-// asagidaki kodlar -> calisan uygulama icerisinde implemente edilmis interfaceleri bulur ve onlar icin aspect interceptor selectori cagirir
-// yani yukaridaki classlar icin once asagidaki selectoru cagiriyor (aspecti var mi diye check ediyor)
+            // asagidaki kodlar -> calisan uygulama icerisinde implemente edilmis interfaceleri bulur ve onlar icin aspect interceptor selectori cagirir
+            // yani yukaridaki classlar icin once asagidaki selectoru cagiriyor (aspecti var mi diye check ediyor)
 
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly(); 
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
                 .EnableInterfaceInterceptors(new ProxyGenerationOptions()
                 {
