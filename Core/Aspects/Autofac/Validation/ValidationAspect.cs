@@ -10,23 +10,28 @@ using System.Threading.Tasks;
 
 namespace Core.Aspects.Autofac.Validation
 {
-    public class ValidationAspect : MethodInterception
+    public class ValidationAspect : MethodInterception  // aspect -> methodun sonunda basinda calisacak yapi
     {
         private Type _validatorType;
-        public ValidationAspect(Type validatorType)
+        public ValidationAspect(Type validatorType)     // type -> attribute tip
         {
-            if (!typeof(IValidator).IsAssignableFrom(validatorType))    //validatorType bir ivalidator degilse hata firlat
+            // defensive coding -> aspectin typeof'u bu sekilde olmali [ValidationAspect(typeof(ProductValidator))]
+            // yani typeof'u bir ivalidator olmali (ornek -> productvalidator) yoksa entity vs de verilebilirdi.
+            // bunun onune gecmek icin ivalidator olmali diyoruz
+            if (!typeof(IValidator).IsAssignableFrom(validatorType))    //validatorType (productValidator vs.)  bir ivalidator degilse hata firlat
             {
                 throw new System.Exception("Bu dogrulama classi degil");
             }
-
             _validatorType = validatorType;
         }
-        protected override void OnBefore(IInvocation invocation)
+
+        // validation methodun basinda yapilir onun icin virtual olan methodu override diyip ezerek icini dolduruyoruz
+        protected override void OnBefore(IInvocation invocation)    // method interceptiondan geliyor 
         {
-            var validator = (IValidator)Activator.CreateInstance(_validatorType);   // reflection -> calisma aninda islem yapmayi saglar
-            var entityType = _validatorType.BaseType.GetGenericArguments()[0];  
-            // yukarida product validator'un calisma tipini bul (abstractvalidator<product>) generic argumanlarindan ilkini bul
+            var validator = (IValidator)Activator.CreateInstance(_validatorType);   // reflection -> calisma aninda islem yapmayi saglar (product validatiorin instanceini olustur, ivalidator tipine cast et)
+            var entityType = _validatorType.BaseType.GetGenericArguments()[0]; // _validatorType -> productValidator
+            // product validator'in base'ine git (abstractvalidator<product>) onun generic arg. getir (product)
+            // yukarida product validator'un calisma tipini bul, generic argumanlarindan ilkini bul 
             var entities = invocation.Arguments.Where(t => t.GetType() == entityType);
             // invocation -> method demek. Methodun parametrelerine bak (product)  birden fazla da olabilir
             foreach (var entity in entities)
