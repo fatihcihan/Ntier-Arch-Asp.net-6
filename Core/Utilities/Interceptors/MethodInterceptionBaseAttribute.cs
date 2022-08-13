@@ -11,11 +11,11 @@ namespace Core.Utilities.Interceptors
     // aop icin gerekli altyapiyi hazirliyoruz. (log, cache, transaction, exception vs. attribute olarak kullanacagiz)
     // classlar ve methodlar icin kullanilabilir, birden fazla kullanilabilir ve inherit eden de kullanabilir
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    public abstract class MethodInterceptionBaseAttribute : Attribute, IInterceptor
+    public abstract class MethodInterceptionBaseAttribute : Attribute, IInterceptor     // interceptor -> autofac'in interceptor ozelligi var demistik (DynamicProxy)
     {
-        public int Priority { get; set; }
+        public int Priority { get; set; }       // priority -> oncelik (once loglama sonra validation vs. gibi)
 
-        public virtual void Intercept(IInvocation invocation)
+        public virtual void Intercept(IInvocation invocation)       // invocation -> bizim methodumuza karsilik geliyor
         {
 
         }
