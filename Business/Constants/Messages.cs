@@ -13,6 +13,9 @@ namespace Business.Constants
         public static string ProductNotAdded = "the product could not be added";
         public static string MaintenanceTime = "";
         public static string ProductListed = "";
+        public static string ProductNameAlreadyExists = "";
+        public static string ProductCountOfCategoryError = "";
 
     }
+
 }
