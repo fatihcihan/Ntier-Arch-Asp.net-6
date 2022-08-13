@@ -11,6 +11,7 @@ namespace Core.CrossCuttingConcerns.Validation
     public static class ValidationTool
     {
         // kendi validation toolumuz
+        // validator -> product validator, category validator... vs
         public static void Validate(IValidator validator, object entity)    // entity de olabilir dto da olabilir o yuzden object 
         {
             var context = new ValidationContext<object>(entity);
