@@ -21,7 +21,10 @@ namespace Business.DependencyResolvers.Autofac
         {
             // IProductService istenirse ona ProductManager'i ver. 
             builder.RegisterType<ProductManager>().As<IProductService>().SingleInstance();
+            builder.RegisterType<CategoryManager>().As<ICategoryService>().SingleInstance();
+
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
+            builder.RegisterType<EfCategoryDal>().As<ICategoryDal>().SingleInstance();
 
 
             // asagidaki kodlar -> calisan uygulama icerisinde implemente edilmis interfaceleri bulur ve onlar icin aspect interceptor selectori cagirir
