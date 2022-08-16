@@ -15,6 +15,7 @@ namespace Business.Constants
         public static string ProductListed = "";
         public static string ProductNameAlreadyExists = "";
         public static string ProductCountOfCategoryError = "";
+        public static string CategoryLimitExceded = "";
 
     }
 
